@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/pjmcnamee/lab-06#readme",
   "dependencies": {
+    "cores": "^0.8.5",
     "cors": "^2.8.4",
     "dotenv": "^6.1.0",
     "express": "^4.16.4",
