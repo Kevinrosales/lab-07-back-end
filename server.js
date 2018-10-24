@@ -76,10 +76,11 @@ app.get('/yelp', getYelp);
 
 function getYelp (request, response){
 
-  const _URL = `https://api.yelp.com/v3/businesses/search/${process.env.YELP_API_KEY}/${request.query.data.latitude},${request.query.data.longitude}`;
+  const _URL = `https://api.yelp.com/v3/businesses/search?${request.query.data.latitude}&${request.query.data.longitude}`;
 
 
 return superagent.get(_URL)
+.set({'Authorization': 'Bearer '+ process.env.YELP_API_KEY})
   .then(result => {
     const allBusinesses = [];
 
