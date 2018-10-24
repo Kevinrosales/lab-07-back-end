@@ -70,6 +70,36 @@ function Weather(day) {
   this.time = new Date(day.time * 1000).toString().slice(0, 15);
 }
 
+/*************    YELP API  *******************/
+
+app.get('/yelp', getYelp);
+
+function getYelp (request, response){
+
+  const _URL = `https://api.yelp.com/v3/businesses/search/${process.env.YELP_API_KEY}/${request.query.data.latitude},${request.query.data.longitude}`;
+}
+
+return superagent.get(_URL)
+  .then(result => {
+    const allBusinesses = [];
+
+    // result.body.daily.data.forEach(day => {
+    //   const summary = new Weather(day);
+    //   weatherSummaries.push(summary);
+    // });
+
+    response.send(allBusinesses);
+  });
+
+//we need 'name', 'image_url', 'price', 'rating', 'url'
+
+function Business(local){
+  this.name = local.name;
+  this.imgUrl = local.image_url;
+  this.price = local.price;
+  this.rating = local.rating;
+  this.url = local.url;
+}
 
 /*************    ERROR HANDLER  *******************/
 
