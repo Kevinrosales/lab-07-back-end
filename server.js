@@ -14,6 +14,8 @@ app.use(cors());
 app.get('/location', (request,response) => {
   getLocation(request.query.data)
     .then( locationData => response.send(locationData) )
+    // .then(app.get('/weather', getWeather))
+    // .then(app.get('/yelp', getYelp))
     .catch( error => handleError(error, response) );
 });
 
@@ -76,27 +78,28 @@ app.get('/yelp', getYelp);
 
 function getYelp (request, response){
 
-  const _URL = `https://api.yelp.com/v3/businesses/search?${request.query.data.latitude}&${request.query.data.longitude}`;
+  const _URL = `https://api.yelp.com/v3/businesses/search?latitude=${request.query.data.latitude}&longitude=${request.query.data.longitude}`;
 
 
-return superagent.get(_URL)
-.set({'Authorization': 'Bearer '+ process.env.YELP_API_KEY})
-  .then(result => {
-    const allBusinesses = [];
+  return superagent.get(_URL)
+    .set({'Authorization': 'Bearer '+ process.env.YELP_API_KEY})
+    .then(result => {
+      const allBusinesses = [];
 
-    result.body.businesses.forEach(bus => {
-      const localBusiness = new Business(bus);
-      allBusinesses.push(localBusiness);
-    });
-    response.send(allBusinesses);
-  });
+      result.body.businesses.forEach(bus => {
+        const localBusiness = new Business(bus);
+        allBusinesses.push(localBusiness);
+      });
+      response.send(allBusinesses);
+    })
+    .catch(error => handleError(error, response));
 }
 
 //we need 'name', 'image_url', 'price', 'rating', 'url'
 
 function Business(local){
   this.name = local.name;
-  this.imgUrl = local.image_url;
+  this.image_url = local.image_url;
   this.price = local.price;
   this.rating = local.rating;
   this.url = local.url;
