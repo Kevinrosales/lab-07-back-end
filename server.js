@@ -38,48 +38,40 @@ function Location(data) {
   this.longitude = data.geometry.location.lng;
 }
 
-// app.get('/location', (request,response) => {
-//   const locationData = searchToLatLong(request.query.data);
-//   response.send(locationData);
-// });
-
-// function searchToLatLong(query) {
-//   const geoData = require('./data/geo.json');
-//   const location = new Location(geoData.results[0]);
-
-//   return location;
-// }
-
-// function Location(data) {
-//   this.formatted_query = data.formatted_address;
-//   this.latitude = data.geometry.location.lat;
-//   this.longitude = data.geometry.location.lng;
-// }
 
 
 /*************    WEATHER API  *******************/
 
-app.get('/weather', (request,response) => {
-  const forcastData = searchWeatherData(request.query.data);
-  response.send(forcastData);
-});
+app.get('/weather', getWeather);
 
-function searchWeatherData(query){
-  const weatherData = require('./data/darksky.json');
-  const dailyWeather = [];
-  const weather = weatherData.daily.data.forEach((item)=>{
-    dailyWeather.push(new Weather(item));
-  });
 
-  return dailyWeather;
+function getWeather(request, response) {
+
+  const _URL = `https://api.darksky.net/forecast/${process.env.WEATHER_API_KEY}/${request.query.data.latitude},${request.query.data.longitude}`;
+
+  return superagent.get(_URL)
+    .then(result => {
+
+      const weatherSummaries = [];
+
+      result.body.daily.data.forEach(day => {
+        const summary = new Weather(day);
+        weatherSummaries.push(summary);
+      });
+
+      response.send(weatherSummaries);
+
+    })
+    .catch(error => handleError(error, response));
 }
 
-function Weather(data){
-  this.time = new Date(data.time * 1000).toString().slice(0, 15);
-  this.forecast = data.summary;
-  console.log(data.summary);
+function Weather(day) {
+  this.forecast = day.summary;
+  this.time = new Date(day.time * 1000).toString().slice(0, 15);
 }
 
+
+/*************    ERROR HANDLER  *******************/
 
 function handleError(err, res) {
   console.error('ERR', err);
