@@ -19,7 +19,7 @@ app.get('/location', (request,response) => {
 function searchToLatLong(query) {
   const geoData = require('./data/geo.json');
   const location = new Location(geoData.results[0]);
-  // location.search_query = query;
+
   return location;
 }
 
@@ -40,16 +40,16 @@ function searchWeatherData(query){
   const weather = weatherData.daily.data.forEach((item)=>{
     dailyWeather.push(new Weather(item));
   });
-  // weather.search_query = query;
-  console.log(dailyWeather);
+
   return dailyWeather;
 }
 
 function Weather(data){
-  this.time = data.time;
+  this.time = new Date(data.time * 1000).toString().slice(0, 15);
   this.forecast = data.summary;
   console.log(data.summary);
 }
+
 
 app.get('/', function (request, response){
   throw new Error('status: 500', 'Sorry, somthing went wrong.')
